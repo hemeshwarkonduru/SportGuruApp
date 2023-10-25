@@ -21,10 +21,18 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.hemeshwar257.SportGuru"
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "70c8ad4f-3912-431b-a7ce-3bff2a316829"
+      }
+    },
+    "scheme": "sportguru"
+
   }
 }
