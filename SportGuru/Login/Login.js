@@ -4,16 +4,16 @@ import logo from '../assets/SportGuru.webp'
 import { Dimensions } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import { useNavigation } from '@react-navigation/native';
-// import * as WebBrowser from "expo-web-browser";
-// import * as Google from "expo-auth-session/providers/google";
-// import {
-//   GoogleAuthProvider,
-//   onAuthStateChanged,
-//   signInWithCredential,
-// } from "firebase/auth";
-// import { auth } from "../firebaseConfig";
-// import AsyncStorage from "@react-native-async-storage/async-storage";
-// import { ActivityIndicator} from "react-native";
+import * as WebBrowser from "expo-web-browser";
+import * as Google from "expo-auth-session/providers/google";
+import {
+  GoogleAuthProvider,
+  onAuthStateChanged,
+  signInWithCredential,
+} from "firebase/auth";
+import { auth } from "../firebaseConfig";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { ActivityIndicator} from "react-native";
 
 
 const marginTopPercent = 15;
@@ -79,19 +79,19 @@ export default function Login() {
     }
 
     
-    // const [userInfo, setUserInfo] = React.useState();
-    // const [loading, setLoading] = React.useState(false);
-    // const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
-    //     androidClientId: "50490491314-usrfmrj8e9rq8pk415e1uld9g5mdnkoe.apps.googleusercontent.com",
-    // });
+    const [userInfo, setUserInfo] = React.useState();
+    const [loading, setLoading] = React.useState(false);
+    const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
+        androidClientId: "50490491314-9gvr45vr3km52bdftcgrpthgafpqbtiv.apps.googleusercontent.com",
+    });
 
-    // React.useEffect(() => {
-    //     if (response?.type === "success") {
-    //       const { id_token } = response.params;
-    //       const credential = GoogleAuthProvider.credential(id_token);
-    //       signInWithCredential(auth, credential);
-    //     }
-    //   }, [response]);
+    React.useEffect(() => {
+        if (response?.type === "success") {
+          const { id_token } = response.params;
+          const credential = GoogleAuthProvider.credential(id_token);
+          signInWithCredential(auth, credential);
+        }
+      }, [response]);
 
     return (
         <View style = {styles.root}>
@@ -119,12 +119,12 @@ export default function Login() {
                 >
                 <Text style={styles.buttonText}>LOGIN</Text>
             </TouchableOpacity>
-            {/* <TouchableOpacity
+            <TouchableOpacity
                 style={styles.loginButton}
-                onPress={() => {}}
+                onPress={() => {promptAsync()}}
                 >
                 <Text style={styles.buttonText}>Login with Google</Text>
-            </TouchableOpacity> */}
+            </TouchableOpacity>
             <View style = {styles.dontAccount}>
                 <TouchableOpacity
                     style={styles.forgotPasswordButton}

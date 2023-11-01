@@ -1,35 +1,43 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View,Pressable } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
 export default function SportEventCard({ card , isFirstCard }) {
-  const name = "Hemeshwar Konduru";
-  const sport = "Badminton";
-  const date = "10/24/2023";
-  const startTime = "6 PM";
-  const endTime = "8 PM";
-  isFirstCard = true;
+
+  const navigation = useNavigation();
+
+  const handleCardPress = () => {
+    console.log(card)
+    navigation.navigate('EventDetailsScreen', { card });
+  };
+
+
 
   return (
-    <View style={[styles.cardContainer, { marginTop: isFirstCard ? 60 : 20 }]}>
-      <View style={styles.card}>
-        <View style={styles.sportContainer}>
-            <Text style = {styles.labelText}>Organizer: </Text>
-            <Text style={styles.name}>{name}</Text>
-        </View>
-        <View style={styles.sportContainer}>
-          <Text style={styles.labelText}>Sport: </Text>
-          <Text style={styles.sportText}>{sport}</Text>
-        </View>
-        <View style={styles.sportContainer}>
-          <Text style={styles.labelText}>Date: </Text>
-          <Text style={styles.date}>{date}</Text>
-        </View>
-        <View style={styles.sportContainer}>
-          <Text style={styles.labelText}>Timings: </Text>
-          <Text style={styles.time}>{`${startTime} - ${endTime}`}</Text>
+    <Pressable onPress = {handleCardPress}>
+      <View style={[styles.cardContainer, { marginTop: isFirstCard ? 60 : 20 }]}>
+        <View style={styles.card}>
+          <View style={styles.sportContainer}>
+              <Text style = {styles.labelText}>Organizer: </Text>
+              <Text style={styles.name}>{card.organizer}</Text>
+          </View>
+          <View style={styles.sportContainer}>
+            <Text style={styles.labelText}>Sport: </Text>
+            <Text style={styles.sportText}>{card.sport}</Text>
+          </View>
+          <View style={styles.sportContainer}>
+            <Text style={styles.labelText}>Date: </Text>
+            <Text style={styles.date}>{card.date}</Text>
+          </View>
+          <View style={styles.sportContainer}>
+            <Text style={styles.labelText}>Timings: </Text>
+            <Text style={styles.time}>{`${card.timeStart} - ${card.timeEnd}`}</Text>
+          </View>
         </View>
       </View>
-    </View>
+
+    </Pressable>
+    
   );
 }
 

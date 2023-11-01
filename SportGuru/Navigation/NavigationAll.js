@@ -10,6 +10,7 @@ import Settings from "../Home/Settings";
 import {createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
+import EventDetailsScreen from "../Component/EventDetailsScreen"
 
 const Stack = createStackNavigator();
 
@@ -17,13 +18,26 @@ const BottomTab = createBottomTabNavigator();
 
 function BottomNavigator(){
   return(
-    <BottomTab.Navigator>
+    <BottomTab.Navigator
+    screenOptions={({ route }) => ({
+      tabBarIcon: ({ focused, color, size }) => {
+        let iconTag;
+        if (route.name === "Home") {
+          iconTag = focused ? "home" : "home-outline";
+        } else if (route.name === "My Schedule") {
+          iconTag = focused ? "time" : "time-outline";
+        } else if (route.name === "Settings") {
+          iconTag = focused ? "settings" : "settings-outline";
+        }
+        return <Ionicons name={iconTag} size={size} color={color} />;
+      }
+    })}>
       <BottomTab.Screen name ="Home" component = {Home}
-      options = {{tabBarIcon: () => <Ionicons name="home" size={24} color="black" />, headerShown: false}}/>
+      options = {{ headerShown: false}}/>
       <BottomTab.Screen name ="My Schedule" component = {MySchedule}
-      options = {{tabBarIcon: () => <MaterialIcons name="schedule" size={24} color="black" /> , headerShown: false}}/>
+      options = {{headerShown: false}}/>
       <BottomTab.Screen name ="Settings" component = {Settings}
-      options = {{tabBarIcon: () => <Ionicons name="settings-sharp" size={24} color="black" /> , headerShown: false}}/>
+      options = {{ headerShown: false}}/>
     </BottomTab.Navigator>
   );
 }
@@ -36,6 +50,7 @@ export default function NavigationAll() {
         <Stack.Screen name="Signup" component={Signup} options = {{ headerShown: false}}/>
         <Stack.Screen name="HomeWithBottomNav" component={BottomNavigator} 
         options = {{ headerShown: false}}/>
+        <Stack.Screen name="EventDetailsScreen" component = {EventDetailsScreen} options = {{ headerShown: false}}/>
       </Stack.Navigator>
     </NavigationContainer>
   );

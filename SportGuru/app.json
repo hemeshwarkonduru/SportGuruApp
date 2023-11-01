@@ -31,8 +31,8 @@
       "eas": {
         "projectId": "70c8ad4f-3912-431b-a7ce-3bff2a316829"
       }
-    },
-    "scheme": "sportguru"
-
+    }
+    ,
+    "scheme" : "sportguru"
   }
 }
