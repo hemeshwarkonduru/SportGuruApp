@@ -15,6 +15,8 @@ import { auth } from "../firebaseConfig";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ActivityIndicator} from "react-native";
 import {useEmailUser} from "../Component/ZustandEmail"
+import { getFirestore, collection, getDocs, where, query, arrayContains } from 'firebase/firestore';
+import { app } from '../firebaseConfig';
 
 
 const marginTopPercent = 15;
@@ -49,53 +51,45 @@ export default function Login() {
     };
 
     const clickedOnLogin = async () => {
-        if(!email || !pin){
-            console.error("Error: Enter All the fields")
+        if (!email || !pin) {
+            showToast("Enter All the fields");
+            console.log("Error: Enter All the fields");
             return;
         }
-
-        try{
-            const response = await fetch("https://firestore.googleapis.com/v1/projects/sportguru-f9f7f/databases/(default)/documents/Users/",
-            {
-            method: "GET", 
-            headers: {
-                'Content-Type': 'application/json'
-                }
-            }
-            );
-            if(response.ok){
-                const responseData = await response.json();
-                const users = responseData.documents.map((document) => document.fields);
-                const user = users.find((userData) => userData.email.stringValue === email);
-                if(user) {
-                    if(user.pin.integerValue == parseInt(pin, 10)) {
-                        
-                        setEmail(user.email.stringValue)
-                        setEmailInStore(user.email.stringValue)
-                        showToast("Login successful")
-                        console.log("Login successful");
-                        //navigateToHome()
-                    } else {
-                        console.log("Error: Incorrect PIN");
-                        showToast("Incorrect PIN, try again")
-                        setPin("")
-                        return;
-                    }
+    
+        try {
+            const db = getFirestore(app);
+            const usersCollection = collection(db, 'User');
+            const querySnapshot = await getDocs(query(usersCollection, where('email', '==', email)));
+    
+            if (!querySnapshot.empty) {
+                const userDoc = querySnapshot.docs[0];
+                const user = userDoc.data();
+    
+                if (user.pin === parseInt(pin, 10)) {
+                    setEmail(user.email);
+                    setEmailInStore(user.email);
+                    showToast("Login successful");
+                    console.log("Login successful");
+                    // navigateToHome();
                 } else {
-                    console.error("Error: Email not found");
-                    setEmail('')
-                    setPin('')
-                    return;
+                    console.log("Error: Incorrect PIN");
+                    showToast("Incorrect PIN, try again");
+                    setPin("");
+                    
                 }
+            } else {
+                
+                setEmail("");
+                setPin("");
+                console.error("Error: Email not found");
             }
-            else {
-                console.error("Error: API Error");
-                return;
-            }
-        } catch(error){
-            console.error("Error: Server Side Error")
+        } catch (error) {
+            console.error("Error: Server Side Error", error);
+            
         }
     }
+    
 
     
     const [userInfo, setUserInfo] = React.useState();
@@ -149,7 +143,7 @@ export default function Login() {
                 <Text style={styles.buttonText}>LOGIN</Text>
             </TouchableOpacity>
             <TouchableOpacity
-                style={styles.loginButton}
+                style={styles.loginButtonGoogle}
                 onPress={() => {promptAsync()}}
                 >
                 <Text style={styles.buttonText}>Login with Google</Text>
@@ -207,10 +201,21 @@ const styles = StyleSheet.create({
         backgroundColor: '#fcb34a',
         borderWidth: 1,
         borderRadius: 30,
-        width: "30%",
+        width: "40%",
         height: 45,
         marginBottom: 20,
-        borderColor: '#020024',
+        borderColor: 'black',
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    loginButtonGoogle: {
+        backgroundColor: '#6ab1f2',
+        borderWidth: 1,
+        borderRadius: 30,
+        width: "70%",
+        height: 45,
+        marginBottom: 20,
+        borderColor: 'black',
         alignItems: 'center',
         justifyContent: 'center'
     },

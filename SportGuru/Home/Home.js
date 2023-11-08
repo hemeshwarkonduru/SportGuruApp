@@ -5,7 +5,7 @@ import { app } from '../firebaseConfig';
 import { useEffect, useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { useEmailUser } from '../Component/ZustandEmail'; 
-import { useIsFocused, useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 
 export default function Home() {
     const emailUser = useEmailUser((state) => state.email);
@@ -13,8 +13,6 @@ export default function Home() {
     const [isLoading, setLoading] = useState(true);
 
     const navigation = useNavigation();
-
-    const isFocused = useIsFocused();
 
     const handleCreatePost = () => {
         navigation.navigate("CreatePost");
@@ -40,11 +38,9 @@ export default function Home() {
         }
     }
 
-    useEffect(() => {
-        if (isFocused) {
+    useFocusEffect(() => {
             eventsDataFunc();
-        }
-      }, [isFocused]);
+      });
     
 
     return (
@@ -66,6 +62,7 @@ export default function Home() {
                         style={styles.createPostButton}
                     >
                         <Ionicons name="add-circle" size={64} color="#8d5eaf" />
+                        <Text>Create Event</Text>
                     </TouchableOpacity>
                 </>
             )}
@@ -82,5 +79,6 @@ const styles = StyleSheet.create({
         position: 'absolute',
         bottom: 20,
         right: 20,
+        alignItems: "center",
     },
 });

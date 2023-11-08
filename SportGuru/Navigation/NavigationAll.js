@@ -27,7 +27,7 @@ function BottomNavigator(){
         if (route.name === "Home") {
           iconTag = focused ? "home" : "home-outline";
         } else if (route.name === "My Schedule") {
-          iconTag = focused ? "time" : "time-outline";
+          iconTag = focused ? "calendar" : "calendar-outline";
         } else if (route.name === "Settings") {
           iconTag = focused ? "settings" : "settings-outline";
         }

@@ -2,24 +2,35 @@ import React from 'react';
 import { StyleSheet, Text, View, Pressable } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
-export default function SportEventCard({ card, isFirstCard , email}) {
+export default function SportEventCard({ card, isFirstCard, email }) {
   const navigation = useNavigation();
-  //console.log(email)
+  const isOrganizer = card.organizerEmail === email;
+
   const handleCardPress = () => {
-    navigation.navigate('EventDetailsScreen', {card ,  email});
+    navigation.navigate('EventDetailsScreen', { card, email });
   };
 
-  //console.log("email" + emailUser);
   return (
     <View style={[styles.cardContainer, { marginTop: isFirstCard ? 60 : 10 }]}>
       <View style={styles.card}>
-        <View style={styles.sportContainer}>
-          <Text style={styles.labelText}>Organizer: </Text>
-          <Text style={styles.name}>{card.organizer}</Text>
+        <View style={styles.cardHeader}>
+          <View style={styles.sportContainer}>
+            <Text style={styles.labelText}>
+              Organizer: 
+            </Text>
+            <Text style={styles.name}>{card.organizer}</Text>
+          </View>
+          {isOrganizer && (
+            <Text style={styles.organizerIndicator}>Host</Text>
+          )}
         </View>
         <View style={styles.sportContainer}>
           <Text style={styles.labelText}>Sport: </Text>
           <Text style={styles.sportText}>{card.sport}</Text>
+        </View>
+        <View style={styles.sportContainer}>
+          <Text style={styles.labelText}>City: </Text>
+          <Text style={styles.time}>{card.city}</Text>
         </View>
         <View style={styles.sportContainer}>
           <Text style={styles.labelText}>Date: </Text>
@@ -28,10 +39,6 @@ export default function SportEventCard({ card, isFirstCard , email}) {
         <View style={styles.sportContainer}>
           <Text style={styles.labelText}>Timings: </Text>
           <Text style={styles.time}>{`${card.timeStart} - ${card.timeEnd}`}</Text>
-        </View>
-        <View style={styles.sportContainer}>
-          <Text style={styles.labelText}>City: </Text>
-          <Text style={styles.time}>{card.city}</Text>
         </View>
         <Pressable style={styles.viewDetailsButton} onPress={handleCardPress}>
           <Text style={styles.viewDetailsButtonText}>View Details</Text>
@@ -54,6 +61,10 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
+  },
+  cardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
   name: {
     fontSize: 18,
@@ -86,5 +97,12 @@ const styles = StyleSheet.create({
   viewDetailsButtonText: {
     color: 'white',
     textAlign: 'center',
+  },
+  organizerIndicator: {
+    backgroundColor: '#fa6c07',
+    color: 'white',
+    borderRadius: 4,
+    padding: 4,
+    fontSize: 12,
   },
 });

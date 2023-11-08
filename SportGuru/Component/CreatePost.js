@@ -4,7 +4,7 @@ import { useEmailUser } from './ZustandEmail';
 import { addDoc, collection, getDocs, getFirestore, query, where } from 'firebase/firestore';
 import {app} from "../firebaseConfig";
 import { useNavigation } from '@react-navigation/native';
-import { useIsFocused } from '@react-navigation/native';
+
 
 
 export default function CreatePost(){
@@ -12,6 +12,7 @@ export default function CreatePost(){
     const emailUser = useEmailUser((state) => state.email);
 
     const [sport, setSport] = useState('');
+    const [city, setCity] = useState('');
     const [location, setLocation] = useState('');
     const [roomNo, setRoomNo] = useState('');
     const [date, setDate] = useState('');
@@ -33,14 +34,14 @@ export default function CreatePost(){
             const db = getFirestore(app);
             const sportEventCollection = collection(db, 'SportEvent');
             
-            const userCollection = collection(db, 'Users');
+            const userCollection = collection(db, 'User');
             const userQuery = query(userCollection, where('email', '==', emailUser));
             const userQuerySnapshot = await getDocs(userQuery);
             
             if (userQuerySnapshot.size === 1) {
                 const userData = userQuerySnapshot.docs[0].data();
-                const organizerName = `${userData.firstName} ${userData.lastName}`;
-                const peopleAttending = [emailUser]
+                const organizer = `${userData.firstName} ${userData.lastName}`;
+                const peopleAttending = []
                 const newSportEvent = {
                     organizerEmail : emailUser,
                     organizer,
@@ -51,6 +52,7 @@ export default function CreatePost(){
                     timeStart,
                     timeEnd,
                     description,
+                    city,
                     peopleAttending,
                     maxPeople,
                     noAttending: 1
@@ -81,6 +83,10 @@ export default function CreatePost(){
                 <TextInput placeholder='Sport' style={styles.loginInput}
                 placeholderTextColor={'#c28837'} onChangeText={setSport}
                 multiline={true}  numberOfLines={2}></TextInput>
+            </View>
+            <View style={styles.loginInputStyle}>
+                <TextInput placeholder='City' style={styles.loginInput}
+                 placeholderTextColor={'#c28837'} onChangeText={setCity}></TextInput>
             </View>
             <View style={styles.loginInputStyle}>
                 <TextInput placeholder='Location' style={styles.loginInput}

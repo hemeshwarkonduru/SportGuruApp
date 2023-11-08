@@ -3,13 +3,12 @@ import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyB0LFw1CwE5Jq5mYuma5ZlyDlI8qYw0lr4",
-  authDomain: "sportguru-f9f7f.firebaseapp.com",
-  projectId: "sportguru-f9f7f",
-  storageBucket: "sportguru-f9f7f.appspot.com",
-  messagingSenderId: "176052305861",
-  appId: "1:176052305861:web:6f35d4882c99c62c3bd5ac",
-  measurementId: "G-N6NDBP8SBJ"
+  apiKey: "AIzaSyB4kDEO3huP0dW3rlvYdS5BhmOXNu1hoPU",
+  authDomain: "sportguruapp.firebaseapp.com",
+  projectId: "sportguruapp",
+  storageBucket: "sportguruapp.appspot.com",
+  messagingSenderId: "253032592500",
+  appId: "1:253032592500:web:9d106678f985476f12cd21"
 };
 
 // Initialize Firebase
