@@ -1,5 +1,5 @@
 import {React,useState,useEffect} from 'react';
-import { View, Text, StyleSheet, ScrollView, Button, TouchableOpacity} from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Button, TouchableOpacity,ToastAndroid, ActivityIndicator} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { getFirestore, collection, doc, updateDoc ,getDoc} from 'firebase/firestore';
 import { app } from '../firebaseConfig';
@@ -8,11 +8,16 @@ import { app } from '../firebaseConfig';
 
 export default function EventDetailsScreen({route}) {
   const id = route.params.card.id;
+  const emailUser = route.params.email;
 
   const navigation = useNavigation();
 
   const goBackToHome = () => {
     navigation.goBack()
+  }
+
+  function showToast(text) {
+    ToastAndroid.show(text, ToastAndroid.SHORT);
   }
 
   const [singleEventData , setSingleEventData] = useState({})
@@ -41,92 +46,123 @@ export default function EventDetailsScreen({route}) {
   }, []);
 
   const regsiterTheUser = async () => {
-    try{
+    try {
         const db = getFirestore(app);
         const sportEventCollection = collection(db, 'SportEvent');
-        if(db && id){
-          const sportEventDoc = doc(sportEventCollection, id);
-          const updatedNoAttending = singleEventData.noAttending + 1;
-          const updateData = {
-            noAttending: updatedNoAttending
-          };
-          await updateDoc(sportEventDoc, updateData);
-          navigation.goBack()
-        }
-        else{
-          console.error("Some Error Occured with Id or Connection");
-        }
-        
+        if (db && id) {
+            const sportEventDoc = doc(sportEventCollection, id);
+            const sportEventSnapshot = await getDoc(sportEventDoc);
 
+            if (sportEventSnapshot.exists()) {
+                const currentData = sportEventSnapshot.data();
+                const currentPeopleAttending = currentData.peopleAttending || [];
+                const maxPeople = currentData.maxPeople;
+
+                if (!currentPeopleAttending.includes(emailUser)) {
+                    // Check if the event is not full.
+                    if (currentData.noAttending < maxPeople) {
+                        // Add the email to the peopleAttending array.
+                        currentPeopleAttending.unshift(emailUser);
+
+                        const updatedNoAttending = currentData.noAttending + 1;
+
+                        const updateData = {
+                            peopleAttending: currentPeopleAttending,
+                            noAttending: updatedNoAttending
+                        };
+
+                        await updateDoc(sportEventDoc, updateData);
+                        navigation.goBack();
+                    } else {
+                        showToast("Event is already full.");
+                    }
+                } else {
+                    showToast("You are already registered for this event.");
+                }
+            } else {
+                console.error("Document not found");
+                showToast("Server Error");
+            }
+        } else {
+            console.error("Some Error Occurred with ID or Connection");
+            showToast("Server Error");
+        }
+    } catch (error) {
+        console.error("Error While updating the fields: " + error);
     }
-    catch(error){
-      console.error("Error While updating the fields" + error);
-    }
-  }
+}
+
+
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.header}>Event Details</Text>
-      <View style={styles.details}>
-        <Text style={styles.label}>Organizer Name:  </Text>
-        <Text style={styles.value}>{singleEventData.organizer}</Text>
-      </View>
-      <View style={styles.details}>
-        <Text style={styles.label}>Organizer Email:  </Text>
-        <Text style={styles.value}>{singleEventData.organizerEmail}</Text>
-      </View>
-      <View style={styles.details}>
-        <Text style={styles.label}>Sport:  </Text>
-        <Text style={styles.sportValue}>{singleEventData.sport}</Text>
-      </View>
-      <View style={styles.details}>
-        <Text style={styles.label}>Date:  </Text>
-        <Text style={styles.value}>{singleEventData.date}</Text>
-      </View>
-      <View style={styles.details}>
-        <Text style={styles.label}>Timings:  </Text>
-        <Text style={styles.value}>{singleEventData.timeStart} - {singleEventData.timeEnd}</Text>
-      </View>
-      <View style={styles.details}>
-        <Text style={styles.label}>Description:  </Text>
-        <Text style={styles.value}>{singleEventData.description}</Text>
-      </View>
-      <View style={styles.details}>
-        <Text style={styles.label}>City:  </Text>
-        <Text style={styles.value}>{singleEventData.city}</Text>
-      </View>
-      <View style={styles.details}>
-        <Text style={styles.label}>Max People:  </Text>
-        <Text style={styles.value}>{singleEventData.maxPeople}</Text>
-      </View>
-      <View style={styles.details}>
-        <Text style={styles.label}>Number Attending:  </Text>
-        <Text style={styles.value}>{singleEventData.noAttending}</Text>
-      </View>
-      <View style={styles.details}>
-        <Text style={styles.label}>Room Number:  </Text>
-        <Text style={styles.value}>{singleEventData.roomNo}</Text>
-      </View>
-      <View style={styles.details}>
-        <Text style={styles.label}>Place:  </Text>
-        <Text style={styles.value}>{singleEventData.place}</Text>
-      </View>
-      <View style = {{marginTop: "10px"}}>
-        <TouchableOpacity
-            style={styles.backButton}
-            onPress={() => {regsiterTheUser()}}
-            >
-            <Text style={styles.buttonText}>Register</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.backButton}
-            onPress={() => {goBackToHome()}}
-            >
-            <Text style={styles.buttonText}>Go Back</Text>
-          </TouchableOpacity>
-      </View>
-    </ScrollView>
-  );
+    <View style={{ flex: 1 }}>
+        {isLoading ? (
+            <ActivityIndicator size="large" color="#0000ff" style={styles.loadingIndicator} />
+        ) : (
+          <ScrollView contentContainerStyle={styles.container}>
+            <Text style={styles.header}>Event Details</Text>
+            <View style={styles.details}>
+              <Text style={styles.label}>Organizer Name:  </Text>
+              <Text style={styles.value}>{singleEventData.organizer}</Text>
+            </View>
+            <View style={styles.details}>
+              <Text style={styles.label}>Organizer Email:  </Text>
+              <Text style={styles.value}>{singleEventData.organizerEmail}</Text>
+            </View>
+            <View style={styles.details}>
+              <Text style={styles.label}>Sport:  </Text>
+              <Text style={styles.sportValue}>{singleEventData.sport}</Text>
+            </View>
+            <View style={styles.details}>
+              <Text style={styles.label}>Date:  </Text>
+              <Text style={styles.value}>{singleEventData.date}</Text>
+            </View>
+            <View style={styles.details}>
+              <Text style={styles.label}>Timings:  </Text>
+              <Text style={styles.value}>{singleEventData.timeStart} - {singleEventData.timeEnd}</Text>
+            </View>
+            <View style={styles.details}>
+              <Text style={styles.label}>Description:  </Text>
+              <Text style={styles.value}>{singleEventData.description}</Text>
+            </View>
+            <View style={styles.details}>
+              <Text style={styles.label}>City:  </Text>
+              <Text style={styles.value}>{singleEventData.city}</Text>
+            </View>
+            <View style={styles.details}>
+              <Text style={styles.label}>Max People:  </Text>
+              <Text style={styles.value}>{singleEventData.maxPeople}</Text>
+            </View>
+            <View style={styles.details}>
+              <Text style={styles.label}>Number Attending:  </Text>
+              <Text style={styles.value}>{singleEventData.noAttending}</Text>
+            </View>
+            <View style={styles.details}>
+              <Text style={styles.label}>Room Number:  </Text>
+              <Text style={styles.value}>{singleEventData.roomNo}</Text>
+            </View>
+            <View style={styles.details}>
+              <Text style={styles.label}>Location:  </Text>
+              <Text style={styles.value}>{singleEventData.place}</Text>
+            </View>
+            <View style = {{marginTop: "20px"}}>
+              <TouchableOpacity
+                  style={styles.backButton}
+                  onPress={() => {regsiterTheUser()}}
+                  >
+                  <Text style={styles.buttonText}>Register</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.backButton}
+                  onPress={() => {goBackToHome()}}
+                  >
+                  <Text style={styles.buttonText}>Go Back</Text>
+                </TouchableOpacity>
+            </View>
+          </ScrollView>
+        )}
+    </View>
+);
 }
 
 const styles = StyleSheet.create({
@@ -161,8 +197,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#fcb34a',
     borderWidth: 1,
     borderRadius: 30,
-    width: "50%",
+    width: "100%",
     height: 45,
+    marginTop: 20,
     marginBottom: 20,
     borderColor: '#020024',
     alignItems: 'center',

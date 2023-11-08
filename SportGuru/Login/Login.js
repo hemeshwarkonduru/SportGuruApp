@@ -1,5 +1,5 @@
 
-import { StyleSheet, Text, TextInput, View, Image , TouchableOpacity} from 'react-native';
+import { StyleSheet, Text, TextInput, View, Image , Modal,TouchableOpacity, ToastAndroid} from 'react-native';
 import logo from '../assets/SportGuru.webp'
 import { Dimensions } from 'react-native';
 import React, { useState, useEffect } from 'react';
@@ -14,6 +14,7 @@ import {
 import { auth } from "../firebaseConfig";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ActivityIndicator} from "react-native";
+import {useEmailUser} from "../Component/ZustandEmail"
 
 
 const marginTopPercent = 15;
@@ -21,18 +22,31 @@ const windowHeight = Dimensions.get('window').height;
 
 
 export default function Login() {
+
+    const setEmailInStore = useEmailUser((state) => state.setEmail);
+    const [isModalVisible, setModalVisible] = useState(false);
+
     const [email,setEmail] = useState('')
     const [pin, setPin] = useState('')
 
-    const navigation = useNavigation();
+    //const navigation = useNavigation();
 
     const navigateToSignup = () => {
-        navigation.navigate("Signup")
+        // navigation.navigate("Signup")
     }
 
     const navigateToHome = () => {
-        navigation.navigate("HomeWithBottomNav")
-    }
+        //navigation.navigate("HomeWithBottomNav");
+
+      }
+    
+      function showToast(text) {
+        ToastAndroid.show(text, ToastAndroid.SHORT);
+      }
+
+    const toggleModal = () => {
+        setModalVisible(!isModalVisible);
+    };
 
     const clickedOnLogin = async () => {
         if(!email || !pin){
@@ -52,14 +66,18 @@ export default function Login() {
             if(response.ok){
                 const responseData = await response.json();
                 const users = responseData.documents.map((document) => document.fields);
-
                 const user = users.find((userData) => userData.email.stringValue === email);
                 if(user) {
                     if(user.pin.integerValue == parseInt(pin, 10)) {
+                        
+                        setEmail(user.email.stringValue)
+                        setEmailInStore(user.email.stringValue)
+                        showToast("Login successful")
                         console.log("Login successful");
-                        navigateToHome()
+                        //navigateToHome()
                     } else {
-                        console.error("Error: Incorrect PIN");
+                        console.log("Error: Incorrect PIN");
+                        showToast("Incorrect PIN, try again")
                         setPin("")
                         return;
                     }
@@ -72,6 +90,7 @@ export default function Login() {
             }
             else {
                 console.error("Error: API Error");
+                return;
             }
         } catch(error){
             console.error("Error: Server Side Error")
@@ -92,6 +111,16 @@ export default function Login() {
           signInWithCredential(auth, credential);
         }
       }, [response]);
+
+
+      const ModalContent = () => {
+        return (
+          <View style={styles.modalContent}>
+            <Text>This is the content inside the modal.</Text>
+            <Button title="Close" onPress={toggleModal} />
+          </View>
+        );
+      };
 
     return (
         <View style = {styles.root}>
@@ -192,5 +221,15 @@ const styles = StyleSheet.create({
     dontAccount : {
         height: 25,
         marginTop : 30
-    }
+    },
+    modalContent: {
+        backgroundColor: "white",
+        padding: 20,
+        borderRadius: 10,
+      },
+      modalContainer: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+      },
 });

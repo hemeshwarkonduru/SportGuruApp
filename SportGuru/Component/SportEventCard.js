@@ -2,13 +2,14 @@ import React from 'react';
 import { StyleSheet, Text, View, Pressable } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
-export default function SportEventCard({ card, isFirstCard }) {
+export default function SportEventCard({ card, isFirstCard , email}) {
   const navigation = useNavigation();
-
+  //console.log(email)
   const handleCardPress = () => {
-    navigation.navigate('EventDetailsScreen', {card});
+    navigation.navigate('EventDetailsScreen', {card ,  email});
   };
 
+  //console.log("email" + emailUser);
   return (
     <View style={[styles.cardContainer, { marginTop: isFirstCard ? 60 : 10 }]}>
       <View style={styles.card}>
@@ -27,6 +28,10 @@ export default function SportEventCard({ card, isFirstCard }) {
         <View style={styles.sportContainer}>
           <Text style={styles.labelText}>Timings: </Text>
           <Text style={styles.time}>{`${card.timeStart} - ${card.timeEnd}`}</Text>
+        </View>
+        <View style={styles.sportContainer}>
+          <Text style={styles.labelText}>City: </Text>
+          <Text style={styles.time}>{card.city}</Text>
         </View>
         <Pressable style={styles.viewDetailsButton} onPress={handleCardPress}>
           <Text style={styles.viewDetailsButtonText}>View Details</Text>

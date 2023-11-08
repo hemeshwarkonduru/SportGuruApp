@@ -11,6 +11,8 @@ import {createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
 import EventDetailsScreen from "../Component/EventDetailsScreen"
+import { useState } from 'react';
+import CreatePost from '../Component/CreatePost';
 
 const Stack = createStackNavigator();
 
@@ -32,8 +34,11 @@ function BottomNavigator(){
         return <Ionicons name={iconTag} size={size} color={color} />;
       }
     })}>
-      <BottomTab.Screen name ="Home" component = {Home}
-      options = {{ headerShown: false}}/>
+      <BottomTab.Screen
+          name="Home"
+          component={Home}
+          options={{ headerShown: false }}
+        />
       <BottomTab.Screen name ="My Schedule" component = {MySchedule}
       options = {{headerShown: false}}/>
       <BottomTab.Screen name ="Settings" component = {Settings}
@@ -45,12 +50,19 @@ function BottomNavigator(){
 export default function NavigationAll() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Login">
-        <Stack.Screen name="Login" component = {Login} options = {{ headerShown: false}}/>
+      <Stack.Navigator initialRouteName="HomeWithBottomNav">
+        {/* <Stack.Screen name="Login" component = {Login} options = {{ headerShown: false}}/> */}
         <Stack.Screen name="Signup" component={Signup} options = {{ headerShown: false}}/>
-        <Stack.Screen name="HomeWithBottomNav" component={BottomNavigator} 
-        options = {{ headerShown: false}}/>
+        <Stack.Screen
+            name="HomeWithBottomNav"
+            component={BottomNavigator}
+            options= {{
+              headerShown: false,
+            }}
+            />
+
         <Stack.Screen name="EventDetailsScreen" component = {EventDetailsScreen} options = {{ headerShown: false}}/>
+        <Stack.Screen name="CreatePost" component = {CreatePost} options = {{ headerShown: false}}/>
       </Stack.Navigator>
     </NavigationContainer>
   );
