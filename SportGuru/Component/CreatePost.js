@@ -20,7 +20,6 @@ export default function CreatePost(){
     const [timeEnd, setTimeEnd] = useState('');
     const [description, setDescription] = useState('');
     const [maxPeople, setMaxPeople] = useState(1)
-
     
 
     function showToast(text) {
@@ -31,6 +30,26 @@ export default function CreatePost(){
 
     const handleCreatePost = async () => {
         try {
+            const isValidDateFormat = (inputDate) => {
+                const dateFormat = /^\d{4}\/\d{1,2}\/\d{1,2}$/;
+                return inputDate.match(dateFormat);
+            };
+        
+            const isValidTimeFormat = (inputTime) => {
+                const timeFormat = /^(0?[1-9]|1[0-2]):[0-5][0-9] (AM|PM)$/i;
+                return inputTime.match(timeFormat);
+            };
+        
+            if (!isValidDateFormat(date)) {
+                showToast('Invalid date format. Please use yyyy/mm/dd');
+                return;
+            }
+        
+            if (!isValidTimeFormat(timeStart) || !isValidTimeFormat(timeEnd)) {
+                showToast('Invalid time format. Please use HH:MM AM/PM');
+                return;
+            }
+
             const db = getFirestore(app);
             const sportEventCollection = collection(db, 'SportEvent');
             
@@ -103,7 +122,7 @@ export default function CreatePost(){
                 onChangeText={setMaxPeople}></TextInput>
             </View>
             <View style={styles.loginInputStyle}>
-                <TextInput placeholder='Date' style={styles.loginInput} 
+                <TextInput placeholder='Date (yyyy/mm/dd)' style={styles.loginInput} 
                 placeholderTextColor={'#c28837'} onChangeText={setDate}></TextInput>
             </View>
             <View style={styles.loginInputStyle}>

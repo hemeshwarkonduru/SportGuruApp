@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, TextInput, View, Image , TouchableOpacity} from 'react-native';
+import { StyleSheet, Text, TextInput, View, Image , TouchableOpacity, ToastAndroid,Modal} from 'react-native';
 import logo from '../assets/SportGuru.webp'
 import { Dimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
@@ -9,23 +9,30 @@ import { useNavigation } from '@react-navigation/native';
 const windowHeight = Dimensions.get('window').height;
 
 
-export default function Signup() {
+export default function Signup({ isVisible, onClose }) {
 
-    const navigation = useNavigation();
+    //const navigation = useNavigation();
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [email, setEmail] = useState('');
     const [newPin, setNewPin] = useState('');
     const [reenterNewPin, setReenterNewPin] = useState('');
 
+    function showToast(text) {
+        ToastAndroid.show(text, ToastAndroid.SHORT);
+      }
+
     const handleSignup = async () => {
         if (!firstName || !lastName || !email || !newPin || !reenterNewPin) {
-            console.error("Error: Please Enter All the fields");
+            console.log("Error: Please Enter All the fields");
+            showToast("Please Enter All the fields");
+            setNewPin('');
             return;
           }
       
         if(newPin != reenterNewPin){
-            console.error("Pin Doesn't Match Enter Again");
+            console.log("Pin Doesn't Match Enter Again");
+            showToast("Pin Doesn't Match Enter Again")
             setNewPin('');
             setReenterNewPin('');
             return;
@@ -41,7 +48,7 @@ export default function Signup() {
         };
 
         try{
-            const response = await fetch("https://firestore.googleapis.com/v1/projects/sportguru-f9f7f/databases/(default)/documents/Users/",
+            const response = await fetch("https://firestore.googleapis.com/v1/projects/sportguruapp/databases/(default)/documents/User/",
             {
                 headers: {
                 'Content-Type': 'application/json'
@@ -50,13 +57,16 @@ export default function Signup() {
                 body: JSON.stringify(data)
             });
             if(response.ok){
-                navigation.navigate("Login")
+                showToast('Signup successful');
+                onClose();
             }
             else {
                 console.error("Error: API Error");
+                showToast("Something went wrong try after some time");
             }
         } catch(error){
             console.error("Error: Server Side Error")
+            showToast("Something went wrong try after some time");
         }
     
     }
@@ -65,8 +75,9 @@ export default function Signup() {
     
         
     return (
-        <View style = {styles.root}>
-            <Image source = {logo} style = {[styles.logo , {height: windowHeight * 0.3}]}/>
+        <Modal visible={isVisible} transparent animationType="slide">
+            <View style={styles.modalContainer}>
+            <View style={styles.modalContent}>
             <Text style={styles.loginTitleText}>Sign Up</Text>
             <View style={styles.loginInputStyle}>
                 <TextInput placeholder='First Name' style={styles.loginInput}
@@ -98,20 +109,36 @@ export default function Signup() {
                 >
                 <Text style={styles.buttonText}>SIGN UP</Text>
             </TouchableOpacity>
+            <TouchableOpacity
+                style={styles.loginButton}
+                onPress={() => {onClose()}}
+                >
+                <Text style={styles.buttonText}>Go Back</Text>
+            </TouchableOpacity>
 
-        </View>
+            </View>
+            </View>
+        </Modal>
     );
 }
 
 
 
 const styles = StyleSheet.create({
-    root: {
-        alignItems: 'center',
-        backgroundColor: '#ffffff',
+    modalContainer: {
+        flex: 1,
         justifyContent: 'center',
-        flex:1
-    },
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      },
+      modalContent: {
+        backgroundColor: '#ffffff',
+        padding: 20,
+        borderRadius: 10,
+        width: '80%',
+        justifyContent: 'center',
+        alignItems: 'center',
+      },
     
     logo: {
         width: '60%',
@@ -143,7 +170,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#fcb34a',
         borderWidth: 1,
         borderRadius: 30,
-        width: "30%",
+        width: "70%",
         height: 45,
         marginBottom: 20,
         borderColor: '#020024',

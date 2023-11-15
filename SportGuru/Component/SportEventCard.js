@@ -11,7 +11,7 @@ export default function SportEventCard({ card, isFirstCard, email }) {
   };
 
   return (
-    <View style={[styles.cardContainer, { marginTop: isFirstCard ? 60 : 10 }]}>
+    <View style={[styles.cardContainer, { marginTop: isFirstCard ? 10 : 10 }]}>
       <View style={styles.card}>
         <View style={styles.cardHeader}>
           <View style={styles.sportContainer}>

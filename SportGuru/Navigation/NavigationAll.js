@@ -13,6 +13,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import EventDetailsScreen from "../Component/EventDetailsScreen"
 import { useState } from 'react';
 import CreatePost from '../Component/CreatePost';
+import ForgotPin from '../Login/ForgotPin';
 
 const Stack = createStackNavigator();
 
@@ -52,7 +53,7 @@ export default function NavigationAll() {
     <NavigationContainer>
       <Stack.Navigator initialRouteName="HomeWithBottomNav">
         {/* <Stack.Screen name="Login" component = {Login} options = {{ headerShown: false}}/> */}
-        <Stack.Screen name="Signup" component={Signup} options = {{ headerShown: false}}/>
+        {/* <Stack.Screen name="Signup" component={Signup} options = {{ headerShown: false}}/> */}
         <Stack.Screen
             name="HomeWithBottomNav"
             component={BottomNavigator}
@@ -63,6 +64,7 @@ export default function NavigationAll() {
 
         <Stack.Screen name="EventDetailsScreen" component = {EventDetailsScreen} options = {{ headerShown: false}}/>
         <Stack.Screen name="CreatePost" component = {CreatePost} options = {{ headerShown: false}}/>
+        <Stack.Screen name="ForgotPin" component = {ForgotPin} options = {{ headerShown: false}}/>
       </Stack.Navigator>
     </NavigationContainer>
   );

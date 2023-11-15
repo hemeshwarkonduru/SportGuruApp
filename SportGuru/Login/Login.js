@@ -4,19 +4,22 @@ import logo from '../assets/SportGuru.webp'
 import { Dimensions } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import { useNavigation } from '@react-navigation/native';
-import * as WebBrowser from "expo-web-browser";
-import * as Google from "expo-auth-session/providers/google";
-import {
-  GoogleAuthProvider,
-  onAuthStateChanged,
-  signInWithCredential,
-} from "firebase/auth";
+// import * as WebBrowser from "expo-web-browser";
+// import * as Google from "expo-auth-session/providers/google";
+// import {
+//   GoogleAuthProvider,
+//   onAuthStateChanged,
+//   signInWithCredential,
+// } from "firebase/auth";
 import { auth } from "../firebaseConfig";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ActivityIndicator} from "react-native";
 import {useEmailUser} from "../Component/ZustandEmail"
 import { getFirestore, collection, getDocs, where, query, arrayContains } from 'firebase/firestore';
 import { app } from '../firebaseConfig';
+import Signup from './Signup';
+import SignupForgo from './ForgotPin'
+import SignupForgot from './ForgotPin';
+import ForgotPin from './ForgotPin';
 
 
 const marginTopPercent = 15;
@@ -26,7 +29,10 @@ const windowHeight = Dimensions.get('window').height;
 export default function Login() {
 
     const setEmailInStore = useEmailUser((state) => state.setEmail);
-    const [isModalVisible, setModalVisible] = useState(false);
+    const [isSignupModalVisible, setSignupModalVisible] = useState(false);
+    const [isSignupModalVisiblePin, setSignupModalVisiblePin] = useState(false);
+
+  
 
     const [email,setEmail] = useState('')
     const [pin, setPin] = useState('')
@@ -37,19 +43,21 @@ export default function Login() {
         // navigation.navigate("Signup")
     }
 
-    const navigateToHome = () => {
-        //navigation.navigate("HomeWithBottomNav");
-
-      }
     
       function showToast(text) {
         ToastAndroid.show(text, ToastAndroid.SHORT);
       }
 
-    const toggleModal = () => {
-        setModalVisible(!isModalVisible);
-    };
+      const toggleSignupModal = () => {
+        setSignupModalVisible(!isSignupModalVisible);
+      };
 
+      const toggleSignupModalPin = () => {
+        setSignupModalVisiblePin(!isSignupModalVisiblePin);
+      };
+      
+
+      
     const clickedOnLogin = async () => {
         if (!email || !pin) {
             showToast("Enter All the fields");
@@ -92,29 +100,20 @@ export default function Login() {
     
 
     
-    const [userInfo, setUserInfo] = React.useState();
-    const [loading, setLoading] = React.useState(false);
-    const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
-        androidClientId: "50490491314-9gvr45vr3km52bdftcgrpthgafpqbtiv.apps.googleusercontent.com",
-    });
+    // const [userInfo, setUserInfo] = React.useState();
+    // const [loading, setLoading] = React.useState(false);
+    // const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
+    //     androidClientId: "50490491314-9gvr45vr3km52bdftcgrpthgafpqbtiv.apps.googleusercontent.com",
+    // });
 
-    React.useEffect(() => {
-        if (response?.type === "success") {
-          const { id_token } = response.params;
-          const credential = GoogleAuthProvider.credential(id_token);
-          signInWithCredential(auth, credential);
-        }
-      }, [response]);
+    // React.useEffect(() => {
+    //     if (response?.type === "success") {
+    //       const { id_token } = response.params;
+    //       const credential = GoogleAuthProvider.credential(id_token);
+    //       signInWithCredential(auth, credential);
+    //     }
+    //   }, [response]);
 
-
-      const ModalContent = () => {
-        return (
-          <View style={styles.modalContent}>
-            <Text>This is the content inside the modal.</Text>
-            <Button title="Close" onPress={toggleModal} />
-          </View>
-        );
-      };
 
     return (
         <View style = {styles.root}>
@@ -130,31 +129,43 @@ export default function Login() {
                  onChangeText={setPin} keyboardType='numeric'
                  maxLength={6}></TextInput>
             </View>
-            <TouchableOpacity
-                style={styles.forgotPasswordButton}
-                onPress={() => {}}
-                >
-                <Text style={styles.buttonText}>Forgot your Pin?</Text>
-            </TouchableOpacity>
+            {/* <View style>
+                <TouchableOpacity
+                    style={styles.forgotPasswordButton}
+                    onPress={() => {toggleSignupModalPin()}}
+                    >
+                    <Text style={styles.buttonText}>Forgot Password?</Text>
+                </TouchableOpacity>
+                <ForgotPin
+                isVisible={isSignupModalVisiblePin}
+                onClose={toggleSignupModalPin}
+                />
+            </View> */}
+
+            
             <TouchableOpacity
                 style={styles.loginButton}
                 onPress={() => {clickedOnLogin()}}
                 >
                 <Text style={styles.buttonText}>LOGIN</Text>
             </TouchableOpacity>
-            <TouchableOpacity
+            {/* <TouchableOpacity
                 style={styles.loginButtonGoogle}
                 onPress={() => {promptAsync()}}
                 >
                 <Text style={styles.buttonText}>Login with Google</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
             <View style = {styles.dontAccount}>
                 <TouchableOpacity
                     style={styles.forgotPasswordButton}
-                    onPress={() => {navigateToSignup()}}
+                    onPress={() => {toggleSignupModal()}}
                     >
                     <Text style={styles.buttonText}>Don't have an account? - Sign Up</Text>
                 </TouchableOpacity>
+                <Signup
+                isVisible={isSignupModalVisible}
+                onClose={toggleSignupModal}
+                />
             </View>
 
         </View>
@@ -227,6 +238,7 @@ const styles = StyleSheet.create({
         height: 25,
         marginTop : 30
     },
+    
     modalContent: {
         backgroundColor: "white",
         padding: 20,
